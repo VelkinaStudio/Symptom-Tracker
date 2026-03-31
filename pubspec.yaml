@@ -1,7 +1,7 @@
 name: symptom_tracker
 description: Track symptoms, spot patterns, and bring clearer records to appointments.
 publish_to: 'none'
-version: 1.0.0+1
+version: 1.0.0+2
 
 environment:
   sdk: ^3.7.0

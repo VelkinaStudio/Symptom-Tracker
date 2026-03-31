@@ -2,6 +2,7 @@ import 'package:drift/drift.dart' hide Column;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/database/app_database.dart';
 import '../../../shared/providers/database_provider.dart';
+import '../../../shared/services/widget_service.dart';
 
 class LogSymptomState {
   final String symptomName;
@@ -194,6 +195,14 @@ class LogSymptomNotifier extends StateNotifier<LogSymptomState> {
 
       await dao.setTriggersForEntry(
           entryId, state.selectedTriggerIds.toList());
+
+      // Update home screen widget with fresh data
+      final todayCount = await dao.countEntriesForDate(DateTime.now());
+      final topSymptoms = await WidgetService.computeTopSymptoms(dao);
+      await WidgetService.updateWidgetData(
+        todayCount: todayCount,
+        topSymptoms: topSymptoms,
+      );
 
       return true;
     } catch (_) {

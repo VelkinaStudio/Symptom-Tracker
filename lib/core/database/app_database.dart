@@ -46,13 +46,20 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
         onCreate: (m) async {
           await m.createAll();
           await _seedDefaults();
+        },
+        onUpgrade: (m, from, to) async {
+          if (from < 2) {
+            await m.addColumn(reminders, reminders.label);
+            await m.addColumn(reminders, reminders.days);
+            await m.addColumn(reminders, reminders.intervalHours);
+          }
         },
       );
 

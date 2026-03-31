@@ -9,10 +9,13 @@ class BottomNavShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    // Map branch index (0-3) to destination index (0-4), skipping the Log button at index 2
+    final branchIndex = navigationShell.currentIndex;
+    final destinationIndex = branchIndex >= 2 ? branchIndex + 1 : branchIndex;
     return Scaffold(
       body: navigationShell,
       bottomNavigationBar: NavigationBar(
-        selectedIndex: navigationShell.currentIndex,
+        selectedIndex: destinationIndex,
         onDestinationSelected: (index) {
           if (index == 2) {
             // Center "Log" button navigates to log screen

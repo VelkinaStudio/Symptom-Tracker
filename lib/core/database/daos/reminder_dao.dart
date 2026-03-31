@@ -21,8 +21,11 @@ class ReminderDao extends DatabaseAccessor<AppDatabase>
   Future<int> insertReminder(RemindersCompanion reminder) =>
       into(reminders).insert(reminder);
 
-  Future<void> updateReminder(RemindersCompanion reminder) =>
+  Future<bool> updateReminder(RemindersCompanion reminder) =>
       update(reminders).replace(reminder as Insertable<Reminder>);
+
+  Future<void> deleteReminder(int id) =>
+      (delete(reminders)..where((r) => r.id.equals(id))).go();
 
   Future<void> setEnabled(int id, bool enabled) =>
       (update(reminders)..where((r) => r.id.equals(id)))

@@ -1809,8 +1809,47 @@ class $RemindersTable extends Reminders
     ),
     defaultValue: const Constant(true),
   );
+  static const VerificationMeta _labelMeta = const VerificationMeta('label');
   @override
-  List<GeneratedColumn> get $columns => [id, type, timeOfDay, enabled];
+  late final GeneratedColumn<String> label = GeneratedColumn<String>(
+    'label',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _daysMeta = const VerificationMeta('days');
+  @override
+  late final GeneratedColumn<String> days = GeneratedColumn<String>(
+    'days',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _intervalHoursMeta = const VerificationMeta(
+    'intervalHours',
+  );
+  @override
+  late final GeneratedColumn<int> intervalHours = GeneratedColumn<int>(
+    'interval_hours',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    type,
+    timeOfDay,
+    enabled,
+    label,
+    days,
+    intervalHours,
+  ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -1848,6 +1887,27 @@ class $RemindersTable extends Reminders
         enabled.isAcceptableOrUnknown(data['enabled']!, _enabledMeta),
       );
     }
+    if (data.containsKey('label')) {
+      context.handle(
+        _labelMeta,
+        label.isAcceptableOrUnknown(data['label']!, _labelMeta),
+      );
+    }
+    if (data.containsKey('days')) {
+      context.handle(
+        _daysMeta,
+        days.isAcceptableOrUnknown(data['days']!, _daysMeta),
+      );
+    }
+    if (data.containsKey('interval_hours')) {
+      context.handle(
+        _intervalHoursMeta,
+        intervalHours.isAcceptableOrUnknown(
+          data['interval_hours']!,
+          _intervalHoursMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -1877,6 +1937,20 @@ class $RemindersTable extends Reminders
             DriftSqlType.bool,
             data['${effectivePrefix}enabled'],
           )!,
+      label:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}label'],
+          )!,
+      days:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}days'],
+          )!,
+      intervalHours: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}interval_hours'],
+      ),
     );
   }
 
@@ -1891,11 +1965,17 @@ class Reminder extends DataClass implements Insertable<Reminder> {
   final String type;
   final String timeOfDay;
   final bool enabled;
+  final String label;
+  final String days;
+  final int? intervalHours;
   const Reminder({
     required this.id,
     required this.type,
     required this.timeOfDay,
     required this.enabled,
+    required this.label,
+    required this.days,
+    this.intervalHours,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1904,6 +1984,11 @@ class Reminder extends DataClass implements Insertable<Reminder> {
     map['type'] = Variable<String>(type);
     map['time_of_day'] = Variable<String>(timeOfDay);
     map['enabled'] = Variable<bool>(enabled);
+    map['label'] = Variable<String>(label);
+    map['days'] = Variable<String>(days);
+    if (!nullToAbsent || intervalHours != null) {
+      map['interval_hours'] = Variable<int>(intervalHours);
+    }
     return map;
   }
 
@@ -1913,6 +1998,12 @@ class Reminder extends DataClass implements Insertable<Reminder> {
       type: Value(type),
       timeOfDay: Value(timeOfDay),
       enabled: Value(enabled),
+      label: Value(label),
+      days: Value(days),
+      intervalHours:
+          intervalHours == null && nullToAbsent
+              ? const Value.absent()
+              : Value(intervalHours),
     );
   }
 
@@ -1926,6 +2017,9 @@ class Reminder extends DataClass implements Insertable<Reminder> {
       type: serializer.fromJson<String>(json['type']),
       timeOfDay: serializer.fromJson<String>(json['timeOfDay']),
       enabled: serializer.fromJson<bool>(json['enabled']),
+      label: serializer.fromJson<String>(json['label']),
+      days: serializer.fromJson<String>(json['days']),
+      intervalHours: serializer.fromJson<int?>(json['intervalHours']),
     );
   }
   @override
@@ -1936,6 +2030,9 @@ class Reminder extends DataClass implements Insertable<Reminder> {
       'type': serializer.toJson<String>(type),
       'timeOfDay': serializer.toJson<String>(timeOfDay),
       'enabled': serializer.toJson<bool>(enabled),
+      'label': serializer.toJson<String>(label),
+      'days': serializer.toJson<String>(days),
+      'intervalHours': serializer.toJson<int?>(intervalHours),
     };
   }
 
@@ -1944,11 +2041,18 @@ class Reminder extends DataClass implements Insertable<Reminder> {
     String? type,
     String? timeOfDay,
     bool? enabled,
+    String? label,
+    String? days,
+    Value<int?> intervalHours = const Value.absent(),
   }) => Reminder(
     id: id ?? this.id,
     type: type ?? this.type,
     timeOfDay: timeOfDay ?? this.timeOfDay,
     enabled: enabled ?? this.enabled,
+    label: label ?? this.label,
+    days: days ?? this.days,
+    intervalHours:
+        intervalHours.present ? intervalHours.value : this.intervalHours,
   );
   Reminder copyWithCompanion(RemindersCompanion data) {
     return Reminder(
@@ -1956,6 +2060,12 @@ class Reminder extends DataClass implements Insertable<Reminder> {
       type: data.type.present ? data.type.value : this.type,
       timeOfDay: data.timeOfDay.present ? data.timeOfDay.value : this.timeOfDay,
       enabled: data.enabled.present ? data.enabled.value : this.enabled,
+      label: data.label.present ? data.label.value : this.label,
+      days: data.days.present ? data.days.value : this.days,
+      intervalHours:
+          data.intervalHours.present
+              ? data.intervalHours.value
+              : this.intervalHours,
     );
   }
 
@@ -1965,13 +2075,17 @@ class Reminder extends DataClass implements Insertable<Reminder> {
           ..write('id: $id, ')
           ..write('type: $type, ')
           ..write('timeOfDay: $timeOfDay, ')
-          ..write('enabled: $enabled')
+          ..write('enabled: $enabled, ')
+          ..write('label: $label, ')
+          ..write('days: $days, ')
+          ..write('intervalHours: $intervalHours')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, type, timeOfDay, enabled);
+  int get hashCode =>
+      Object.hash(id, type, timeOfDay, enabled, label, days, intervalHours);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1979,7 +2093,10 @@ class Reminder extends DataClass implements Insertable<Reminder> {
           other.id == this.id &&
           other.type == this.type &&
           other.timeOfDay == this.timeOfDay &&
-          other.enabled == this.enabled);
+          other.enabled == this.enabled &&
+          other.label == this.label &&
+          other.days == this.days &&
+          other.intervalHours == this.intervalHours);
 }
 
 class RemindersCompanion extends UpdateCompanion<Reminder> {
@@ -1987,17 +2104,26 @@ class RemindersCompanion extends UpdateCompanion<Reminder> {
   final Value<String> type;
   final Value<String> timeOfDay;
   final Value<bool> enabled;
+  final Value<String> label;
+  final Value<String> days;
+  final Value<int?> intervalHours;
   const RemindersCompanion({
     this.id = const Value.absent(),
     this.type = const Value.absent(),
     this.timeOfDay = const Value.absent(),
     this.enabled = const Value.absent(),
+    this.label = const Value.absent(),
+    this.days = const Value.absent(),
+    this.intervalHours = const Value.absent(),
   });
   RemindersCompanion.insert({
     this.id = const Value.absent(),
     required String type,
     required String timeOfDay,
     this.enabled = const Value.absent(),
+    this.label = const Value.absent(),
+    this.days = const Value.absent(),
+    this.intervalHours = const Value.absent(),
   }) : type = Value(type),
        timeOfDay = Value(timeOfDay);
   static Insertable<Reminder> custom({
@@ -2005,12 +2131,18 @@ class RemindersCompanion extends UpdateCompanion<Reminder> {
     Expression<String>? type,
     Expression<String>? timeOfDay,
     Expression<bool>? enabled,
+    Expression<String>? label,
+    Expression<String>? days,
+    Expression<int>? intervalHours,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (type != null) 'type': type,
       if (timeOfDay != null) 'time_of_day': timeOfDay,
       if (enabled != null) 'enabled': enabled,
+      if (label != null) 'label': label,
+      if (days != null) 'days': days,
+      if (intervalHours != null) 'interval_hours': intervalHours,
     });
   }
 
@@ -2019,12 +2151,18 @@ class RemindersCompanion extends UpdateCompanion<Reminder> {
     Value<String>? type,
     Value<String>? timeOfDay,
     Value<bool>? enabled,
+    Value<String>? label,
+    Value<String>? days,
+    Value<int?>? intervalHours,
   }) {
     return RemindersCompanion(
       id: id ?? this.id,
       type: type ?? this.type,
       timeOfDay: timeOfDay ?? this.timeOfDay,
       enabled: enabled ?? this.enabled,
+      label: label ?? this.label,
+      days: days ?? this.days,
+      intervalHours: intervalHours ?? this.intervalHours,
     );
   }
 
@@ -2043,6 +2181,15 @@ class RemindersCompanion extends UpdateCompanion<Reminder> {
     if (enabled.present) {
       map['enabled'] = Variable<bool>(enabled.value);
     }
+    if (label.present) {
+      map['label'] = Variable<String>(label.value);
+    }
+    if (days.present) {
+      map['days'] = Variable<String>(days.value);
+    }
+    if (intervalHours.present) {
+      map['interval_hours'] = Variable<int>(intervalHours.value);
+    }
     return map;
   }
 
@@ -2052,7 +2199,10 @@ class RemindersCompanion extends UpdateCompanion<Reminder> {
           ..write('id: $id, ')
           ..write('type: $type, ')
           ..write('timeOfDay: $timeOfDay, ')
-          ..write('enabled: $enabled')
+          ..write('enabled: $enabled, ')
+          ..write('label: $label, ')
+          ..write('days: $days, ')
+          ..write('intervalHours: $intervalHours')
           ..write(')'))
         .toString();
   }
@@ -3656,6 +3806,9 @@ typedef $$RemindersTableCreateCompanionBuilder =
       required String type,
       required String timeOfDay,
       Value<bool> enabled,
+      Value<String> label,
+      Value<String> days,
+      Value<int?> intervalHours,
     });
 typedef $$RemindersTableUpdateCompanionBuilder =
     RemindersCompanion Function({
@@ -3663,6 +3816,9 @@ typedef $$RemindersTableUpdateCompanionBuilder =
       Value<String> type,
       Value<String> timeOfDay,
       Value<bool> enabled,
+      Value<String> label,
+      Value<String> days,
+      Value<int?> intervalHours,
     });
 
 class $$RemindersTableFilterComposer
@@ -3691,6 +3847,21 @@ class $$RemindersTableFilterComposer
 
   ColumnFilters<bool> get enabled => $composableBuilder(
     column: $table.enabled,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get label => $composableBuilder(
+    column: $table.label,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get days => $composableBuilder(
+    column: $table.days,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get intervalHours => $composableBuilder(
+    column: $table.intervalHours,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -3723,6 +3894,21 @@ class $$RemindersTableOrderingComposer
     column: $table.enabled,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get label => $composableBuilder(
+    column: $table.label,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get days => $composableBuilder(
+    column: $table.days,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get intervalHours => $composableBuilder(
+    column: $table.intervalHours,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$RemindersTableAnnotationComposer
@@ -3745,6 +3931,17 @@ class $$RemindersTableAnnotationComposer
 
   GeneratedColumn<bool> get enabled =>
       $composableBuilder(column: $table.enabled, builder: (column) => column);
+
+  GeneratedColumn<String> get label =>
+      $composableBuilder(column: $table.label, builder: (column) => column);
+
+  GeneratedColumn<String> get days =>
+      $composableBuilder(column: $table.days, builder: (column) => column);
+
+  GeneratedColumn<int> get intervalHours => $composableBuilder(
+    column: $table.intervalHours,
+    builder: (column) => column,
+  );
 }
 
 class $$RemindersTableTableManager
@@ -3779,11 +3976,17 @@ class $$RemindersTableTableManager
                 Value<String> type = const Value.absent(),
                 Value<String> timeOfDay = const Value.absent(),
                 Value<bool> enabled = const Value.absent(),
+                Value<String> label = const Value.absent(),
+                Value<String> days = const Value.absent(),
+                Value<int?> intervalHours = const Value.absent(),
               }) => RemindersCompanion(
                 id: id,
                 type: type,
                 timeOfDay: timeOfDay,
                 enabled: enabled,
+                label: label,
+                days: days,
+                intervalHours: intervalHours,
               ),
           createCompanionCallback:
               ({
@@ -3791,11 +3994,17 @@ class $$RemindersTableTableManager
                 required String type,
                 required String timeOfDay,
                 Value<bool> enabled = const Value.absent(),
+                Value<String> label = const Value.absent(),
+                Value<String> days = const Value.absent(),
+                Value<int?> intervalHours = const Value.absent(),
               }) => RemindersCompanion.insert(
                 id: id,
                 type: type,
                 timeOfDay: timeOfDay,
                 enabled: enabled,
+                label: label,
+                days: days,
+                intervalHours: intervalHours,
               ),
           withReferenceMapper:
               (p0) =>

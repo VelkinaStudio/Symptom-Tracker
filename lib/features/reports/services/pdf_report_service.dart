@@ -9,7 +9,7 @@ class PdfReportService {
     final doc = pw.Document();
 
     final dateRange =
-        '${AppDateUtils.formatDate(data.start)} – ${AppDateUtils.formatDate(data.end)}';
+        '${AppDateUtils.formatDate(data.start)} - ${AppDateUtils.formatDate(data.end)}';
 
     // Sort symptom counts descending
     final sortedSymptoms = data.symptomCounts.entries.toList()

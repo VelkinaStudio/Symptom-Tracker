@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:drift/drift.dart' show Value;
 import '../../../shared/providers/database_provider.dart';
+import '../../../shared/services/notification_service.dart';
 import '../../../core/database/app_database.dart';
 import '../providers/onboarding_provider.dart';
 import '../widgets/welcome_page.dart';
@@ -53,11 +55,24 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
     if (state.reminderEnabled) {
       final reminderDao = ref.read(reminderDaoProvider);
-      await reminderDao.insertReminder(
+      final id = await reminderDao.insertReminder(
         RemindersCompanion.insert(
-          type: 'daily_log',
+          type: 'daily',
           timeOfDay: state.reminderTime,
+          label: const Value('Daily check-in'),
         ),
+      );
+
+      final parts = state.reminderTime.split(':');
+      final hour = int.parse(parts[0]);
+      final minute = int.parse(parts[1]);
+      await NotificationService.requestPermissions();
+      await NotificationService.scheduleDailyReminder(
+        id: id,
+        hour: hour,
+        minute: minute,
+        title: 'Symptom Tracker',
+        body: 'Time to log your symptoms',
       );
     }
 

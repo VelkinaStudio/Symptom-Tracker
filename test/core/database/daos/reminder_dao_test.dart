@@ -116,5 +116,87 @@ void main() {
       final types = reminders.map((r) => r.type).toList();
       expect(types, containsAll(['morning', 'evening', 'noon']));
     });
+
+    test('insert reminder with custom label', () async {
+      await db.reminderDao.insertReminder(
+        RemindersCompanion.insert(
+          type: 'daily',
+          timeOfDay: '09:00',
+          label: const Value('Morning check-in'),
+        ),
+      );
+
+      final reminders = await db.reminderDao.getAllReminders();
+      expect(reminders.first.label, 'Morning check-in');
+    });
+
+    test('insert reminder with specific days', () async {
+      await db.reminderDao.insertReminder(
+        RemindersCompanion.insert(
+          type: 'weekly',
+          timeOfDay: '10:00',
+          days: const Value('mon,wed,fri'),
+        ),
+      );
+
+      final reminders = await db.reminderDao.getAllReminders();
+      expect(reminders.first.days, 'mon,wed,fri');
+      expect(reminders.first.type, 'weekly');
+    });
+
+    test('insert reminder with interval hours', () async {
+      await db.reminderDao.insertReminder(
+        RemindersCompanion.insert(
+          type: 'interval',
+          timeOfDay: '08:00',
+          intervalHours: const Value(4),
+        ),
+      );
+
+      final reminders = await db.reminderDao.getAllReminders();
+      expect(reminders.first.intervalHours, 4);
+      expect(reminders.first.type, 'interval');
+    });
+
+    test('insert fully customized reminder', () async {
+      await db.reminderDao.insertReminder(
+        RemindersCompanion.insert(
+          type: 'weekly',
+          timeOfDay: '07:30',
+          label: const Value('Weekday log'),
+          days: const Value('mon,tue,wed,thu,fri'),
+          intervalHours: const Value(6),
+        ),
+      );
+
+      final reminders = await db.reminderDao.getAllReminders();
+      final r = reminders.first;
+      expect(r.label, 'Weekday log');
+      expect(r.days, 'mon,tue,wed,thu,fri');
+      expect(r.intervalHours, 6);
+      expect(r.timeOfDay, '07:30');
+    });
+
+    test('delete reminder', () async {
+      final id = await db.reminderDao.insertReminder(
+        RemindersCompanion.insert(type: 'daily', timeOfDay: '08:00'),
+      );
+
+      await db.reminderDao.deleteReminder(id);
+
+      final reminders = await db.reminderDao.getAllReminders();
+      expect(reminders, isEmpty);
+    });
+
+    test('new columns default correctly', () async {
+      await db.reminderDao.insertReminder(
+        RemindersCompanion.insert(type: 'daily', timeOfDay: '08:00'),
+      );
+
+      final r = (await db.reminderDao.getAllReminders()).first;
+      expect(r.label, '');
+      expect(r.days, '');
+      expect(r.intervalHours, equals(null));
+    });
   });
 }
