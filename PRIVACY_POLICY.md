@@ -34,11 +34,11 @@ If you choose to enable Google Drive backup:
 
 ## Google Sign-In
 
-<<<<<<< HEAD
-Google Sign-In is used solely to authenticate your Google Drive backup. We do not access your email, contacts, or any other Google account data beyond the app-specific Drive folder.
-=======
-Google Sign-In is used to authenticate your Google Drive backup. When you sign in, your name, email address, and profile photo are displayed within the app settings so you can see which account is connected. This information is provided by Google's sign-in service, is held only in temporary memory while the app is running, and is never stored in our database or sent to any server. No other Google account data (contacts, calendar, etc.) is accessed.
->>>>>>> 9a26f81 (feat: UI improvements, Play Store compliance, and privacy policy)
+Google Sign-In is used to authenticate your Google Drive backup. When you sign in, your name, email address,  
+and profile photo are displayed within the app settings so you can see which account is connected. This       
+information is provided by Google's sign-in service, is held only in temporary memory while the app is        
+running, and is never stored in our database or sent to any server. No other Google account data (contacts,   
+calendar, etc.) is accessed.
 
 ## Third-Party Services
 
