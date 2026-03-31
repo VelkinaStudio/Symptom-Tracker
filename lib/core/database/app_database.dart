@@ -6,6 +6,8 @@ import 'package:drift/native.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
+import 'package:sqlite3/open.dart';
+import 'package:sqlcipher_flutter_libs/sqlcipher_flutter_libs.dart';
 
 import 'tables/symptom_entries.dart';
 import 'tables/triggers.dart';
@@ -93,6 +95,10 @@ LazyDatabase _openConnection() {
     final key = await _getOrCreateKey();
     return NativeDatabase.createInBackground(
       file,
+      isolateSetup: () async {
+        await applyWorkaroundToOpenSqlCipherOnOldAndroidVersions();
+        open.overrideFor(OperatingSystem.android, openCipherOnAndroid);
+      },
       setup: (db) {
         db.execute("PRAGMA key = '$key';");
       },
