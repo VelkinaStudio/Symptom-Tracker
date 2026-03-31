@@ -12,11 +12,9 @@ class WidgetService {
 
   static Future<void> updateWidgetData({
     required int todayCount,
-    required int streak,
     List<String> topSymptoms = const [],
   }) async {
     await HomeWidget.saveWidgetData('today_count', todayCount.toString());
-    await HomeWidget.saveWidgetData('streak', streak.toString());
 
     for (int i = 1; i <= 5; i++) {
       final name = (i <= topSymptoms.length) ? topSymptoms[i - 1] : '';

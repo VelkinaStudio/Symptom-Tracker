@@ -61,7 +61,6 @@ class SymptomWidget : GlanceAppWidget() {
         }
 
         val todayCount = prefs.getString("today_count", "0") ?: "0"
-        val streak = prefs.getString("streak", "0") ?: "0"
 
         provideContent {
             val state = currentState<Preferences>()
@@ -77,7 +76,7 @@ class SymptomWidget : GlanceAppWidget() {
                     if (selectedSymptom != null) {
                         SeverityPickerView(selectedSymptom)
                     } else {
-                        SymptomListView(context, symptoms, todayCount, streak)
+                        SymptomListView(context, symptoms, todayCount)
                     }
                 }
             }
@@ -92,7 +91,6 @@ fun SymptomListView(
     context: Context,
     symptoms: List<String>,
     todayCount: String,
-    streak: String,
 ) {
     Column(
         modifier = GlanceModifier
@@ -224,16 +222,6 @@ fun SymptomListView(
             }
 
             Spacer(modifier = GlanceModifier.defaultWeight())
-
-            if (streak != "0") {
-                Text(
-                    text = "\uD83D\uDD25 $streak days",
-                    style = TextStyle(
-                        fontSize = 12.sp,
-                        color = GlanceTheme.colors.onSurfaceVariant,
-                    ),
-                )
-            }
         }
     }
 }

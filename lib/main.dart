@@ -4,6 +4,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqlite3/open.dart';
 import 'package:sqlcipher_flutter_libs/sqlcipher_flutter_libs.dart';
 import 'app.dart';
+import 'core/database/app_database.dart';
+import 'core/database/demo_seed.dart';
 import 'shared/services/notification_service.dart';
 import 'shared/services/widget_service.dart';
 
@@ -18,6 +20,12 @@ void main() async {
   open.overrideFor(OperatingSystem.android, openCipherOnAndroid);
   final prefs = await SharedPreferences.getInstance();
   onboardingComplete = prefs.getBool('onboarding_complete') ?? false;
+
+  // TEMPORARY: Seed demo data for screenshots
+  final db = AppDatabase();
+  await DemoSeed.seed(db);
+  await db.close();
+
   await NotificationService.initialize();
   await WidgetService.initialize();
   runApp(

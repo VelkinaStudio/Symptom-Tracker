@@ -21,12 +21,6 @@ class StatsStrip extends StatelessWidget {
           value: stats.todayCount.toString(),
           label: 'Today',
         ),
-        const SizedBox(width: 8),
-        _StatCard(
-          icon: Icons.local_fire_department,
-          value: stats.currentStreak.toString(),
-          label: 'Day streak',
-        ),
       ],
     );
   }

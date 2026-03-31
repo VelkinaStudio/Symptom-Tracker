@@ -43,10 +43,11 @@ class HomeScreen extends ConsumerWidget {
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            if (!isLoggedIn) ...[
-              const AuthWarningBanner(),
-              const SizedBox(height: 12),
-            ],
+            // TEMP: Hidden for screenshots
+            // if (!isLoggedIn) ...[
+            //   const AuthWarningBanner(),
+            //   const SizedBox(height: 12),
+            // ],
             FilledButton.icon(
               onPressed: () => context.push('/log'),
               icon: const Icon(Icons.add),
