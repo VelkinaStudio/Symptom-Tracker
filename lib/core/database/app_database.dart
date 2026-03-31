@@ -1,7 +1,9 @@
 // lib/core/database/app_database.dart
 import 'dart:io';
+import 'dart:math';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 
@@ -70,10 +72,30 @@ class AppDatabase extends _$AppDatabase {
   }
 }
 
+const _keyName = 'symptom_tracker_db_key';
+
+Future<String> _getOrCreateKey() async {
+  const storage = FlutterSecureStorage();
+  var key = await storage.read(key: _keyName);
+  if (key == null) {
+    final random = Random.secure();
+    final bytes = List.generate(32, (_) => random.nextInt(256));
+    key = bytes.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
+    await storage.write(key: _keyName, value: key);
+  }
+  return key;
+}
+
 LazyDatabase _openConnection() {
   return LazyDatabase(() async {
     final dbFolder = await getApplicationDocumentsDirectory();
     final file = File(p.join(dbFolder.path, 'symptom_tracker.sqlite'));
-    return NativeDatabase.createInBackground(file);
+    final key = await _getOrCreateKey();
+    return NativeDatabase.createInBackground(
+      file,
+      setup: (db) {
+        db.execute("PRAGMA key = '$key';");
+      },
+    );
   });
 }

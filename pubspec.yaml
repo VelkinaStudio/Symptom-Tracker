@@ -12,7 +12,8 @@ dependencies:
   flutter_riverpod: ^2.6.1
   riverpod_annotation: ^2.6.1
   drift: ^2.22.1
-  sqlite3_flutter_libs: ^0.5.28
+  sqlcipher_flutter_libs: ^0.6.0
+  flutter_secure_storage: ^9.2.4
   path_provider: ^2.1.5
   path: ^1.9.1
   google_sign_in: ^6.2.2
